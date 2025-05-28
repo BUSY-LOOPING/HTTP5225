@@ -29,5 +29,19 @@
         'bill'
      );
      ?>
+
+     <?php
+     $hour = date('G');
+     $hour = rand(1, 23);
+     $greeting = 'Good Evening!';
+     if ($hour < 12) {
+        $greeting = 'Good Morning!';
+     }elseif($hour < 19) {
+        $greeting = 'Good Afternoon!';
+     }
+     echo "<p>$greeting</p>";
+     ?>
+
+    
 </body>
 </html>
