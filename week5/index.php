@@ -19,7 +19,7 @@
         if ($colors) {
             foreach ($colors as $color) {
                 // echo print_r($color, true);
-                echo "<div style='background-color: {$color['Hex']}; width: 90%; height: 100px; margin: 10px; align-items: centre;'>{$color['Name']}</div>";
+                echo "<div style='background-color: {$color['Hex']}; width: 90%; height: 50px; margin: 10px; text-align: center;'>{$color['Name']}</div>";
             }
         }
     ?>
