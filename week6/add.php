@@ -1,4 +1,9 @@
 <?php
+	include('functions.php');
+	secure();
+?>
+
+<?php
     if(isset($_POST['AddSchool'])){
         $BoardName = $_POST['BoardName'];
         $SchoolName = $_POST['SchoolName'];
