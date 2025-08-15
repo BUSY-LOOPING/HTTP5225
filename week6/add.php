@@ -3,7 +3,7 @@
 	secure();
 ?>
 
-<?php
+<?php   
     if(isset($_POST['AddSchool'])){
         $BoardName = $_POST['BoardName'];
         $SchoolName = $_POST['SchoolName'];
@@ -20,7 +20,7 @@
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+    <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
