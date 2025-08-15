@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
+use App\Models\Course;
 use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
 use Illuminate\Support\Facades\Session;
@@ -14,7 +15,8 @@ class StudentController extends Controller
      */
     public function index()
     {
-        return view('students.index', ['students'=>Student::all()]);
+        $students = Student::with('courses')->get();
+        return view('students.index', compact('students'));
     }
 
     /**
@@ -22,7 +24,8 @@ class StudentController extends Controller
      */
     public function create()
     {
-        return view('students.create');
+        $courses = Course::all();
+        return view('students.create', compact('courses'));
     }
 
     /**
@@ -30,8 +33,15 @@ class StudentController extends Controller
      */
     public function store(StoreStudentRequest $request)
     {
-        Student::create($request->validated());
-        return redirect() -> route('students.index');
+        $student = Student::create($request->validated());
+        
+        // Attach selected courses if any
+        if ($request->has('courses')) {
+            $student->courses()->attach($request->courses);
+        }
+        
+        Session::flash('success', 'Student created successfully');
+        return redirect()->route('students.index');
     }
 
     /**
@@ -39,6 +49,7 @@ class StudentController extends Controller
      */
     public function show(Student $student)
     {
+        $student->load('courses');
         return view('students.show', compact('student'));
     }
 
@@ -47,7 +58,8 @@ class StudentController extends Controller
      */
     public function edit(Student $student)
     {
-        return view('students.edit', compact('student'));
+        $courses = Course::all();
+        return view('students.edit', compact('student', 'courses'));
     }
 
     /**
@@ -56,30 +68,34 @@ class StudentController extends Controller
     public function update(UpdateStudentRequest $request, Student $student)
     {
         $student->update($request->validated());
+        
+        // Sync courses (remove old and add new)
+        $student->courses()->sync($request->courses ?? []);
+        
         Session::flash('success', 'Updated successfully');
         return redirect()->route('students.index');
     }
 
     public function trash($id)
     {
-        Student::Destroy($id);
-        Session::Flash('success', 'Student trashed successfully');
-        return redirect() -> route('students.index');
+        Student::destroy($id);
+        Session::flash('success', 'Student trashed successfully');
+        return redirect()->route('students.index');
     }
     
     public function destroy($id)
     {
-        $student = Student::withTrashed() -> where('id', $id) -> first();
-        $student -> forceDelete();
-        Session::Flash('success', 'Student deleted successfully');
-        return redirect() -> route('students.index');
+        $student = Student::withTrashed()->where('id', $id)->first();
+        $student->forceDelete();
+        Session::flash('success', 'Student deleted successfully');
+        return redirect()->route('students.index');
     }
 
     public function restore($id)
     {
-        $student = Student::withTrashed() -> where('id', $id) -> first();
-        $student -> restore();
-        Session::Flash('success', 'Student restored successfully');
-        return redirect() -> route('students.trashed');
+        $student = Student::withTrashed()->where('id', $id)->first();
+        $student->restore();
+        Session::flash('success', 'Student restored successfully');
+        return redirect()->route('students.trashed');
     }
 }
